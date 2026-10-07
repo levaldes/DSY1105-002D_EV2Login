@@ -43,14 +43,13 @@ fun AppNavigation(loginViewModel: LoginViewModel) {
     val navController = rememberNavController()
     val windowSizeClass = rememberWindowSizeClass()
 
-    // Manejo centralizado de eventos de navegación[cite: 6]
     LaunchedEffect(Unit) {
         loginViewModel.navigationEvent.collect { event ->
             when (event) {
                 is NavigationEvent.NavigateTo -> {
                     navController.navigate(event.route) {
                         if (event.route == Screen.Login.route) {
-                            popUpTo(0) // Limpia el backstack al cerrar sesión[cite: 6]
+                            popUpTo(0)
                         }
                     }
                 }

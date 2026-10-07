@@ -26,7 +26,6 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     windowSizeClass: WindowSizeClass
 ) {
-    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
@@ -38,7 +37,6 @@ fun LoginScreen(
             contentAlignment = Alignment.Center
         ) {
             if (windowSizeClass == WindowSizeClass.COMPACT) {
-                // Layout Vertical en Card elegante para Celular[cite: 6]
                 Card(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
@@ -57,7 +55,6 @@ fun LoginScreen(
                     }
                 }
             } else {
-                // Layout Horizontal para Tablets o Celular apaisado[cite: 6]
                 Card(
                     modifier = Modifier
                         .width(680.dp)
