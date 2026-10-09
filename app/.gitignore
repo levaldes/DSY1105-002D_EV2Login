@@ -1,1 +1,11 @@
-/build
+# Firebase & Secretos
+app/google-services.json
+local.properties
+
+# Archivos de compilación y caché
+.gradle/
+.idea/
+build/
+app/build/
+*.keystore
+*.jks

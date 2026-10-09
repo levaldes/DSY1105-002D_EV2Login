@@ -1,5 +1,7 @@
 package com.example.loginapp.ui.screens
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,25 +9,30 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.loginapp.ui.utils.WindowSizeClass
-import com.example.loginapp.viewmodel.LoginViewModel
+import com.example.loginapp.viewmodel.RegisterViewModel
 
 @Composable
-fun LoginScreen(
-    viewModel: LoginViewModel,
+fun RegisterScreen(
+    viewModel: RegisterViewModel,
     windowSizeClass: WindowSizeClass
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
     ) { paddingValues ->
@@ -48,15 +55,19 @@ fun LoginScreen(
                         modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        HeaderSection()
-                        Spacer(modifier = Modifier.height(24.dp))
-                        LoginForm(viewModel = viewModel)
+                        RegisterHeaderSection()
+                        Spacer(modifier = Modifier.height(20.dp))
+                        RegisterForm(
+                            viewModel = viewModel,
+                            context = context,
+                            activity = activity
+                        )
                     }
                 }
             } else {
                 Card(
                     modifier = Modifier
-                        .width(680.dp)
+                        .width(720.dp)
                         .padding(24.dp),
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -70,11 +81,15 @@ fun LoginScreen(
                             modifier = Modifier.weight(1f),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            HeaderSection()
+                            RegisterHeaderSection()
                         }
                         Spacer(modifier = Modifier.width(24.dp))
-                        Column(modifier = Modifier.weight(1.2f)) {
-                            LoginForm(viewModel = viewModel)
+                        Column(modifier = Modifier.weight(1.3f)) {
+                            RegisterForm(
+                                viewModel = viewModel,
+                                context = context,
+                                activity = activity
+                            )
                         }
                     }
                 }
@@ -84,7 +99,7 @@ fun LoginScreen(
 }
 
 @Composable
-private fun HeaderSection() {
+private fun RegisterHeaderSection() {
     Box(
         modifier = Modifier
             .size(80.dp)
@@ -101,23 +116,91 @@ private fun HeaderSection() {
     }
     Spacer(modifier = Modifier.height(16.dp))
     Text(
-        text = "Modo Guardián",
+        text = "Crear Cuenta",
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface
     )
     Text(
-        text = "Sistema InsertCode",
+        text = "Únete a Modo Guardián",
         fontSize = 14.sp,
         color = MaterialTheme.colorScheme.outline
     )
 }
 
 @Composable
-private fun LoginForm(viewModel: LoginViewModel) {
+private fun RegisterForm(
+    viewModel: RegisterViewModel,
+    context: Context,
+    activity: Activity?
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(
+            onClick = {
+                activity?.let { currentActivity ->
+                    viewModel.registerWithGitHub(currentActivity)
+                }
+            },
+            enabled = !uiState.isLoading,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text("Continuar con GitHub", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedButton(
+            onClick = {
+                viewModel.registerWithGoogle(context)
+            },
+            enabled = !uiState.isLoading,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text("Continuar con Google", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outlineVariant)
+            Text(
+                text = " o ",
+                color = MaterialTheme.colorScheme.outline,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outlineVariant)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = uiState.name,
+            onValueChange = viewModel::onNameChange,
+            label = { Text("Nombre completo") },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
+            isError = uiState.errores.nameError != null,
+            supportingText = {
+                uiState.errores.nameError?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+            },
+            singleLine = true,
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
         OutlinedTextField(
             value = uiState.email,
             onValueChange = viewModel::onEmailChange,
@@ -133,7 +216,7 @@ private fun LoginForm(viewModel: LoginViewModel) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         OutlinedTextField(
             value = uiState.password,
@@ -161,14 +244,15 @@ private fun LoginForm(viewModel: LoginViewModel) {
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { viewModel.login() },
+            onClick = { viewModel.registerWithEmail() },
+            enabled = !uiState.isLoading,
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(48.dp)
         ) {
             if (uiState.isLoading) {
                 CircularProgressIndicator(
@@ -177,17 +261,17 @@ private fun LoginForm(viewModel: LoginViewModel) {
                     strokeWidth = 2.5.dp
                 )
             } else {
-                Text("Iniciar Sesión", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("Registrarse", fontSize = 15.sp, fontWeight = FontWeight.Bold)
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(
-            onClick = { viewModel.onNavigateToRegister() },
+            onClick = { viewModel.navigateToLogin() },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Text("¿No tienes cuenta? Regístrate aquí", fontSize = 13.sp)
+            Text("¿Ya tienes cuenta? Inicia sesión", fontSize = 13.sp)
         }
     }
 }

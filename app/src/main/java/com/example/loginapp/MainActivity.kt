@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -18,6 +19,7 @@ import com.example.loginapp.navigation.Screen
 import com.example.loginapp.ui.screens.*
 import com.example.loginapp.ui.utils.rememberWindowSizeClass
 import com.example.loginapp.viewmodel.LoginViewModel
+import com.example.loginapp.viewmodel.RegisterViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -65,6 +67,28 @@ fun AppNavigation(loginViewModel: LoginViewModel) {
         composable(Screen.Login.route) {
             LoginScreen(viewModel = loginViewModel, windowSizeClass = windowSizeClass)
         }
+
+        composable(Screen.Register.route) {
+            val registerViewModel: RegisterViewModel = viewModel()
+
+            LaunchedEffect(Unit) {
+                registerViewModel.navigationEvent.collect { event ->
+                    when (event) {
+                        is NavigationEvent.NavigateTo -> {
+                            navController.navigate(event.route) {
+                                if (event.route != Screen.Login.route) {
+                                    popUpTo(Screen.Login.route) { inclusive = true }
+                                }
+                            }
+                        }
+                        is NavigationEvent.NavigateBack -> navController.popBackStack()
+                    }
+                }
+            }
+
+            RegisterScreen(viewModel = registerViewModel, windowSizeClass = windowSizeClass)
+        }
+
         composable(Screen.HomeAdmin.route) {
             HomeAdminScreen(viewModel = loginViewModel)
         }

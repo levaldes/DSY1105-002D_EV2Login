@@ -13,29 +13,21 @@ class LoginViewModel(
     private val authRepository: AuthRepository = AuthRepository()
 ) : ViewModel() {
 
-    // Estado del formulario de Login
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
-    // Eventos de navegación desacoplados
     private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
     val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent.asSharedFlow()
 
     fun onEmailChange(newEmail: String) {
         _uiState.update {
-            it.copy(
-                email = newEmail,
-                errores = it.errores.copy(emailError = null, authError = null)
-            )
+            it.copy(email = newEmail, errores = it.errores.copy(emailError = null, authError = null))
         }
     }
 
     fun onPasswordChange(newPassword: String) {
         _uiState.update {
-            it.copy(
-                password = newPassword,
-                errores = it.errores.copy(passwordError = null, authError = null)
-            )
+            it.copy(password = newPassword, errores = it.errores.copy(passwordError = null, authError = null))
         }
     }
 
@@ -69,7 +61,6 @@ class LoginViewModel(
             result.onSuccess { user ->
                 _uiState.update { it.copy(isLoading = false, currentUser = user) }
 
-                // Redirección diferenciada según rol
                 val route = when (user.role) {
                     UserRole.ADMIN -> Screen.HomeAdmin.route
                     UserRole.SUPERVISOR -> Screen.HomeSupervisor.route
@@ -84,6 +75,12 @@ class LoginViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun onNavigateToRegister() {
+        viewModelScope.launch {
+            _navigationEvent.emit(NavigationEvent.NavigateTo(Screen.Register.route))
         }
     }
 
