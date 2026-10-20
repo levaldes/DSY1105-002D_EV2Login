@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "682645433329",
+    "project_id": "modoguardian",
+    "storage_bucket": "modoguardian.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:682645433329:android:f89408e82aad8f938db250",
+        "android_client_info": {
+          "package_name": "com.example.loginapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "682645433329-dnukhpjtj7tndvs2ii648jsqm5kg5417.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.loginapp",
+            "certificate_hash": "cbae1161c8ba50031b0868f32115caf653d59ac1"
+          }
+        },
+        {
+          "client_id": "682645433329-bo08am7r6grjvimr3041hbck13llt8rt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgREf3_XYoSr4CNzeT-z9H-n1lz_KjJyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "682645433329-bo08am7r6grjvimr3041hbck13llt8rt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
